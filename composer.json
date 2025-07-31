@@ -1,0 +1,30 @@
+{
+  "name": "nurazimzahurin/laravel-rule-with-scope",
+  "description": "Laravel validation rule that respects ORM model global scopes",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nur'Azim Zahurin",
+      "email": "nurazimzahurin@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "illuminate/support": "^8.0|^9.0|^10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nurazimzahurin\\LaravelRuleWithScope\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Nurazimzahurin\\LaravelRuleWithScope\\UniqueWithScopeRuleServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
