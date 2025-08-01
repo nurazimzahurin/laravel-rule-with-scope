@@ -1,94 +1,125 @@
-# Unique With Scope (Laravel/Lumen Validation Rules)
+# 🔐 Unique With Scope — Scoped Validation That Respects Global Scopes in Laravel & Lumen
 
-A Laravel and Lumen validation package that introduces scoped rules like `unique_with_scope`, `exists_with_scope`, and `in_with_scope`. These rules give you more precise and contextual validation options for Eloquent models.
+> Laravel & Lumen validation rules (`unique_with_scope`, `exists_with_scope`, `in_with_scope`) that **honor Eloquent model global scopes** by leveraging the ORM instead of raw queries.
 
-## 🚀 Installation
+---
+
+## ❓ Why This Package?
+
+Laravel's native `unique`, `exists`, and `in` validation rules **do not respect global scopes** defined on your Eloquent models.
+
+### Problem:
+
+If you’ve added a `GlobalScope` to filter records (e.g., `where('is_active', 1)`), Laravel’s native validation will **bypass it** and still validate against unscoped data.
+
+### Solution:
+
+This package uses **Eloquent models directly** for validation, ensuring:
+
+- Your model’s **global scopes** are always applied.
+- Validations like `unique`, `exists`, and `in` are checked **in the same context as your application logic**.
+
+---
+
+## ✅ Features
+
+- `unique_with_scope`: Validate uniqueness using model & scoped columns.
+- `exists_with_scope`: Validate existence with model and scoped filters.
+- `in_with_scope`: Validate that a value is in a scoped Eloquent dataset.
+- **Supports Laravel and Lumen.**
+- Reuses model scopes and logic — **DRY & accurate**.
+
+---
+
+## 📦 Installation
 
 ```bash
 composer require your-vendor/unique-with-scope
 ```
 
+---
+
+## ⚙️ Usage
+
+```php
+$request->validate([
+    'email' => 'required|email|unique_with_scope:App\\Models\\User,email'
+]);
+```
+
+### Parameters
+
+```
+<model>,<column>,<except_id>,<except_column>
+```
+
+The rule will:
+
+- Instantiate the Eloquent model.
+- Apply all global scopes.
+- Add `where` conditions using the provided scope columns.
+- Validate using `->exists()` or `->where(...)->count()`.
+
+---
+
+## 💡 Example
+
+You have a global scope on `User` model:
+
+```php
+protected static function booted()
+{
+    static::addGlobalScope('active', function (Builder $builder) {
+        $builder->where('is_active', 1);
+    });
+}
+```
+
+Laravel’s native validation will ignore it:
+
+```php
+// This will wrongly match soft-deleted or inactive users
+'email' => 'unique:users,email'
+```
+
+With this package:
+
+```php
+// Will respect the 'active' global scope on User model
+'email' => 'unique_with_scope:App\\Models\\User,email'
+```
+
+---
+
 ## 🛠️ Setup
 
 ### Laravel
 
-No additional setup needed. The package is auto-discovered.
+No setup required. Package uses auto-discovery.
 
 ### Lumen
 
-Register the service provider in `bootstrap/app.php`:
+Register the provider in `bootstrap/app.php`:
 
 ```php
 $app->register(\YourVendor\UniqueWithScope\UniqueWithScopeRuleServiceProvider::class);
-```
-
-If not already enabled:
-
-```php
 $app->withFacades();
 ```
 
-## ✅ Available Rules
+---
 
-### `unique_with_scope`
-
-Validates that a given value is unique within a defined scope (e.g. `company_id`, `team_id`, etc.).
+## 🎯 Custom Error Messages
 
 ```php
-'email' => [
-    'required',
-    'unique_with_scope:App\\Models\\User,email,company_id'
-]
+'email.unique_with_scope' => 'This email is already taken in your organization.',
 ```
 
-- **Format**: `unique_with_scope:ModelClass,column,scope1,scope2,...`
-- **Example**: Ensure the email is unique **within a company**.
-
-### `exists_with_scope`
-
-Validates that a given value exists **within** a defined scope in a table.
-
-```php
-'product_id' => [
-    'required',
-    'exists_with_scope:App\\Models\\Product,id,merchant_id'
-]
-```
-
-- **Format**: `exists_with_scope:ModelClass,column,scope1,scope2,...`
-- **Example**: Ensure the product belongs to a specific merchant.
-
-### `in_with_scope`
-
-Validates that a value is in a set defined by scoped model values.
-
-```php
-'channel' => [
-    'required',
-    'in_with_scope:App\\Models\\Channel,name,region'
-]
-```
-
-- **Format**: `in_with_scope:ModelClass,column,scope1,scope2,...`
-
-## 🔁 Example Usage
-
-```php
-$request->validate([
-    'email' => 'required|email|unique_with_scope:App\\Models\\User,email,company_id',
-    'product_id' => 'exists_with_scope:App\\Models\\Product,id,merchant_id',
-    'channel' => 'in_with_scope:App\\Models\\Channel,name,region',
-]);
-```
-
-## 🧪 Custom Error Messages
-
-All rules support Laravel-style custom messages in the `messages()` method or `lang/validation.php`:
-
-```php
-'email.unique_with_scope' => 'This email has already been taken within your company.',
-```
+---
 
 ## 📄 License
 
 MIT © Nur Azim Zahurin
+
+---
+
+> Built to make Laravel validation **respect your domain logic** — just like the rest of your app does.
