@@ -1,12 +1,12 @@
 # 🔐 Unique With Scope — Scoped Validation That Respects Global Scopes in Laravel & Lumen
 
-> Laravel & Lumen validation rules (`unique_with_scope`, `exists_with_scope`, `in_with_scope`) that **honor Eloquent model global scopes** by leveraging the ORM instead of raw queries.
+> Laravel & Lumen validation rules (`unique_with_scope`, `exists_with_scope`) that **honor Eloquent model global scopes** by leveraging the ORM instead of raw queries.
 
 ---
 
 ## ❓ Why This Package?
 
-Laravel's native `unique`, `exists`, and `in` validation rules **do not respect global scopes** defined on your Eloquent models.
+Laravel's native `unique`, `exists` validation rules **do not respect global scopes** defined on your Eloquent models.
 
 ### Problem:
 
@@ -17,7 +17,7 @@ If you’ve added a `GlobalScope` to filter records (e.g., `where('is_active', 1
 This package uses **Eloquent models directly** for validation, ensuring:
 
 - Your model’s **global scopes** are always applied.
-- Validations like `unique`, `exists`, and `in` are checked **in the same context as your application logic**.
+- Validations like `unique`, `exists` are checked **in the same context as your application logic**.
 
 ---
 
@@ -25,7 +25,6 @@ This package uses **Eloquent models directly** for validation, ensuring:
 
 - `unique_with_scope`: Validate uniqueness using model & scoped columns.
 - `exists_with_scope`: Validate existence with model and scoped filters.
-- `in_with_scope`: Validate that a value is in a scoped Eloquent dataset.
 - **Supports Laravel and Lumen.**
 - Reuses model scopes and logic — **DRY & accurate**.
 
@@ -34,7 +33,7 @@ This package uses **Eloquent models directly** for validation, ensuring:
 ## 📦 Installation
 
 ```bash
-composer require your-vendor/unique-with-scope
+composer require nurazimzahurin/laravel-rule-with-scope
 ```
 
 ---
