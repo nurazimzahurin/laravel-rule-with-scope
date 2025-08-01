@@ -38,20 +38,13 @@ class UniqueWithScope implements RuleWithScope
             $query->where($idColumn, '<>', $exceptId);
         }
 
-        return !$query->exists();
-    }
+        if ($query->exists()) {
+            $validator->setCustomMessages([
+                $attribute . '.' . self::name() => 'The ' . str_replace("_", " ", $attribute) . ' has already been taken.',
+            ]);
+            return false;
+        }
 
-    /**
-     * Replace the validation message for the unique rule with scope.
-     *
-     * @param string $message
-     * @param string $attribute
-     * @param string $rule
-     * @param array $parameters
-     * @return string
-     */
-    public static function replacer($message, $attribute, $rule, $parameters): string
-    {
-        return "The {$attribute} has already been taken.";
+        return true;
     }
 }

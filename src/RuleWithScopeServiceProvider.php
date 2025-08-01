@@ -19,7 +19,6 @@ class RuleWithScopeServiceProvider extends ServiceProvider
 
                 if (is_subclass_of($class, RuleWithScope::class)) {
                     Validator::extend($class::name(), [$class, 'validate']);
-                    Validator::replacer($class::name(), [$class, 'replacer']);
                 }
             }
         }

@@ -48,20 +48,13 @@ class ExistsWithScope implements RuleWithScope
             }
         }
 
-        return $query->exists();
-    }
+        if (!$query->exists()) {
+            $validator->setCustomMessages([
+                $attribute . '.' . self::name() => 'The selected ' . str_replace("_", " ", $attribute) . ' is invalid.',
+            ]);
+            return false;
+        }
 
-    /**
-     * Replace the validation message for the exists rule with scope.
-     *
-     * @param string $message
-     * @param string $attribute
-     * @param string $rule
-     * @param array $parameters
-     * @return string
-     */
-    public static function replacer($message, $attribute, $rule, $parameters): string
-    {
-        return "The selected {$attribute} is invalid.";
+        return true;
     }
 }
