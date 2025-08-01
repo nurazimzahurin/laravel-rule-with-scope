@@ -4,7 +4,7 @@ namespace NurazimZahurin\LaravelRuleWithScope\Rules;
 
 use NurazimZahurin\LaravelRuleWithScope\Rules\Contracts\RuleWithScope;
 
-class UniqueWithScope implements RuleWithScope
+class ExistsWithScope implements RuleWithScope
 {
     /**
      * Get the name of the validation rule.
@@ -13,11 +13,11 @@ class UniqueWithScope implements RuleWithScope
      */
     public static function name(): string
     {
-        return 'unique_with_scope';
+        return 'exists_with_scope';
     }
 
     /**
-     * Validate the unique rule with scope.
+     * Validate the exists rule with scope.
      *
      * @param string $attribute
      * @param mixed $value
@@ -27,22 +27,32 @@ class UniqueWithScope implements RuleWithScope
      */
     public static function validate($attribute, $value, $parameters, $validator): bool
     {
-        list($modelClass, $column) = $parameters;
-        $exceptId = $parameters[2] ?? null;
-        $idColumn = $parameters[3] ?? 'id';
-
-        $query = (new $modelClass)->newQuery();
-        $query->where($column, $value);
-
-        if ($exceptId !== null) {
-            $query->where($idColumn, '<>', $exceptId);
+        if (count($parameters) < 2) {
+            return false;
         }
 
-        return !$query->exists();
+        list($modelClass, $column) = $parameters;
+
+        $query = (new $modelClass)->newQuery();
+
+        $query->where($column, $value);
+
+        $scopeParams = array_slice($parameters, 2);
+
+        for ($i = 0; $i < count($scopeParams); $i += 2) {
+            $key = $scopeParams[$i] ?? null;
+            $val = $scopeParams[$i + 1] ?? null;
+
+            if ($key && $val !== null) {
+                $query->where($key, $val);
+            }
+        }
+
+        return $query->exists();
     }
 
     /**
-     * Replace the validation message for the unique rule with scope.
+     * Replace the validation message for the exists rule with scope.
      *
      * @param string $message
      * @param string $attribute
@@ -52,6 +62,6 @@ class UniqueWithScope implements RuleWithScope
      */
     public static function replacer($message, $attribute, $rule, $parameters): string
     {
-        return "The {$attribute} has already been taken.";
+        return "The selected {$attribute} is invalid.";
     }
 }
